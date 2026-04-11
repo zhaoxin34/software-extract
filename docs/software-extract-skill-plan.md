@@ -2,24 +2,42 @@
 
 ## 背景
 
-当前 `software-extract` skill 只有一个粗略的工作流程骨架，需要补充完整的萃取逻辑和输出格式定义。
+当前 `software-extract` skill 只有一个粗略的工作流程骨架，通过两个真实项目（my-secretary、memory）的萃取实验，验证了萃取格式并明确了"精华"的定义。
+
+**精华的定义**（已验证）：
+- 架构设计模式（Clean Architecture、分层模式）
+- 核心抽象接口（Provider、Storage 等）
+- Pipeline 编排模式
+- 关键技术决策
+- 可复用的提示词模板
+
+**不是精华**：
+- 详细的业务规则（这是 SDD Spec 的职责）
+- 具体的 CLI 命令格式
+- 输入/输出格式的每个细节
 
 ---
 
 ## 待办事项
 
-- [ ] **补充萃取输出格式定义**
-  - 定义每个层级（系统/子系统/模块/子模块）需要萃取的具体内容
-  - 明确萃取的"精华"包括哪些信息（架构设计、模块划分、核心接口等）
+### 已完成 ✅
 
-- [ ] **补充详细萃取步骤（步骤 5）**
-  - 具体要分析哪些文件？
-  - 如何判断什么是"精华"？
-  - 代码分析的深度和广度
+- [x] **补充萃取输出格式定义**
+  - 通过 memory 项目验证了格式
+  - 定义了每个层级的萃取内容（description, purpose, responsibilities, features, interfaces, tech_stack）
 
-- [ ] **添加输出示例**
-  - 展示 `primary-report.md` 的内容示例
-  - 展示最终萃取结果的样子
+- [x] **添加输出示例**
+  - my-secretary: `raw/my-secretary/extracted-knowledge.md`
+  - memory: `raw/memory/extracted-knowledge.md`
+
+### 进行中 🔄
+
+- [ ] **完善 SKILL.md 文档**
+  - 补充步骤 5 的详细萃取逻辑
+  - 添加萃取格式模板
+  - 添加输出示例引用
+
+### 待完成 ⏳
 
 - [ ] **添加边界情况处理**
   - 非 Git 项目（纯本地目录）如何处理？
@@ -38,32 +56,84 @@
 
 ---
 
-## 萃取内容模板（草案）
+## 萃取内容模板（已验证）
 
-每个模块/子模块应萃取：
+### 整体结构
 
 ```yaml
-模块名称:
-  path: 模块路径
-  description: 模块功能描述
-  responsibilities: 核心职责列表
-  interfaces:
-    - 接口1: 输入/输出/用途
-  dependencies:
-    - 依赖模块1
-    - 依赖模块2
-  key_files:
-    - 关键文件路径
-  patterns: 使用的设计模式
-  tech_stack: 技术栈
+项目名称:
+  description: 项目描述
+  purpose: 存在目的/解决的问题
+
+  模块1:
+    description: 模块功能描述
+    purpose: 存在目的
+    responsibilities: [职责1, 职责2]
+
+    features:
+      - name: Feature名称
+        description: 功能描述
+        specs:
+          - name: Spec名称
+            description: 规格描述
+            decision: 关键设计决策
+
+    interfaces:
+      - name: 接口名称
+        input: 输入
+        output: 输出
+        usage: 使用场景
+
+    tech_stack: [技术1, 技术2]
+
+  模块2:
+    ...
+
+  关键设计决策:
+    - 决策1: 理由
+    - 决策2: 理由
+
+  可复用的提示词模板: |
+    创建类似系统...
 ```
+
+### Feature/Spec 结构
+
+```yaml
+features:
+  - name: Feature名称
+    description: 功能描述
+    specs:
+      - name: Spec名称
+        description: 规格描述
+        implementation: 实现要点（如有源码）
+        decision: 关键设计决策
+```
+
+---
+
+## 工作流程（当前 SKILL.md）
+
+1. 获取分析目标（URL 或目录）
+2. 初步分析项目结构和意图
+3. 创建存放目录
+4. 保存初级分析报告
+5. 根据初级报告生成萃取结果
 
 ---
 
 ## 优先级
 
-1. **高**: 补充步骤5的详细萃取逻辑（核心功能缺失）
-2. **高**: 添加输出示例（帮助理解预期输出）
-3. **中**: 添加边界情况处理（提升鲁棒性）
-4. **中**: 优化 description（提升触发准确性）
-5. **低**: 测试用例创建和迭代优化
+1. **高**: 完善 SKILL.md（核心功能）
+2. **中**: 添加边界情况处理
+3. **中**: 优化 description
+4. **低**: 测试用例创建和迭代优化
+
+---
+
+## 验证记录
+
+| 项目 | 类型 | 萃取内容 | 验证结果 |
+|------|------|----------|----------|
+| my-secretary | 产品设计文档 | 数据模型、产品概念 | ✅ 适合萃取设计文档 |
+| memory | 完整 Python 项目 | Clean Architecture、抽象接口 | ✅ 适合萃取代码项目 |
