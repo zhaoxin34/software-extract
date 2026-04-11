@@ -242,8 +242,16 @@ features:
 
 ---
 
+## 测试用例
+
+参考 `evals/evals.json` 中的测试用例：
+- 测试1: 产品设计文档萃取（my-secretary）
+- 测试2: 完整Python项目萃取（memory）
+- 测试3: 前后端分离项目萃取（plato）
+
 ## 示例
 
 参考已萃取的示例项目：
 - `raw/my-secretary/` - 产品设计文档萃取示例
 - `raw/memory/` - 完整代码项目萃取示例
+- `raw/plato/` - 前后端分离项目萃取示例

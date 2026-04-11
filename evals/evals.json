@@ -1,0 +1,32 @@
+[
+  {
+    "name": "测试1-产品设计文档萃取",
+    "prompt": "萃取 /Volumes/data/working/ai/my-secretary 的架构精华",
+    "expected": {
+      "outputFiles": ["primary-report.md", "extracted-knowledge.md"],
+      "hasModules": ["数据模型", "产品概念"],
+      "description": "产品设计文档应聚焦萃取数据模型设计和产品概念"
+    }
+  },
+  {
+    "name": "测试2-完整Python项目萃取",
+    "prompt": "萃取 /Volumes/data/working/ai/memory 的架构精华",
+    "expected": {
+      "outputFiles": ["primary-report.md", "extracted-knowledge.md"],
+      "hasModules": ["Entities", "Providers", "Storage", "Pipelines", "Core"],
+      "hasPatterns": ["Clean Architecture", "抽象接口", "fallback_strategies"],
+      "hasAlgorithms": ["MarkdownSemanticChunking", "TreeSitterMarkdownChunking"],
+      "description": "代码项目应萃取架构模式、核心算法、fallback策略"
+    }
+  },
+  {
+    "name": "测试3-前后端分离项目萃取",
+    "prompt": "萃取 /Volumes/data/working/ai/plato 的架构精华",
+    "expected": {
+      "outputFiles": ["primary-report.md", "extracted-knowledge.md"],
+      "hasModules": ["LLM架构层", "业务Prompt层", "服务层", "前端架构"],
+      "hasPatterns": ["三层分层", "BaseLLM", "LLMRegistry", "版本控制"],
+      "description": "前后端项目应萃取前后端分层设计和关键设计决策"
+    }
+  }
+]
