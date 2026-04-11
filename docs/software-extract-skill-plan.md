@@ -2,7 +2,7 @@
 
 ## 背景
 
-当前 `software-extract` skill 只有一个粗略的工作流程骨架，通过两个真实项目（my-secretary、memory）的萃取实验，验证了萃取格式并明确了"精华"的定义。
+当前 `software-extract` skill 只有一个粗略的工作流程骨架，通过三个真实项目（my-secretary、memory、plato）的萃取实验，验证了萃取格式并明确了"精华"的定义。
 
 **精华的定义**（已验证）：
 - 架构设计模式（Clean Architecture、分层模式）
@@ -30,12 +30,18 @@
   - my-secretary: `raw/my-secretary/extracted-knowledge.md`
   - memory: `raw/memory/extracted-knowledge.md`
 
-### 进行中 🔄
-
-- [ ] **完善 SKILL.md 文档**
+- [x] **完善 SKILL.md 文档**
   - 补充步骤 5 的详细萃取逻辑
   - 添加萃取格式模板
-  - 添加输出示例引用
+  - 添加 algorithms 和 fallback_strategies 维度
+
+- [x] **优化 description**
+  - 让描述更"pushy"，提高触发准确性
+  - 明确 skill 触发条件
+
+### 进行中 🔄
+
+暂无进行中的任务
 
 ### 待完成 ⏳
 
@@ -44,8 +50,12 @@
   - 二进制文件或大文件如何处理？
   - 萃取过程中出错如何处理？
 
-- [ ] **优化 description**
-  - 让描述更"pushy"，提高触发准确性
+- [ ] **创建测试用例**
+  - 编写 2-3 个真实场景的测试 prompt
+  - 保存到 `evals/evals.json`
+
+- [ ] **运行测试并迭代优化**
+  - 根据测试结果完善 skill
 
 - [ ] **创建测试用例**
   - 编写 2-3 个真实场景的测试 prompt
@@ -124,10 +134,9 @@ features:
 
 ## 优先级
 
-1. **高**: 完善 SKILL.md（核心功能）
-2. **中**: 添加边界情况处理
-3. **中**: 优化 description
-4. **低**: 测试用例创建和迭代优化
+1. **高**: 添加边界情况处理
+2. **中**: 测试用例创建
+3. **低**: 运行测试并迭代优化
 
 ---
 
@@ -137,3 +146,4 @@ features:
 |------|------|----------|----------|
 | my-secretary | 产品设计文档 | 数据模型、产品概念 | ✅ 适合萃取设计文档 |
 | memory | 完整 Python 项目 | Clean Architecture、抽象接口 | ✅ 适合萃取代码项目 |
+| plato | 前后端分离项目 | 三层LLM架构、版本控制、前端架构 | ✅ 适合萃取复杂项目 |
