@@ -8,7 +8,6 @@
 
 # Temp
 temp/
-raw/
 
 # macOS
 .DS_Store

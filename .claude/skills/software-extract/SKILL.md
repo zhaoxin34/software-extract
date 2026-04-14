@@ -39,9 +39,18 @@ metadata:
 
 **分析内容包括**：
 - 项目类型（源码项目/文档项目/配置项目等）
-- 技术栈
 - 项目结构
 - 核心功能概述
+
+**必须分析依赖配置文件**：
+- 如果存在 `package.json`，必须分析所有依赖项
+- 如果存在 `requirements.txt`、`pyproject.toml`、`go.mod`、`Cargo.toml`、`pom.xml` 等依赖配置文件，必须分析
+- 识别关键技术库并按功能分类（UI组件、状态管理、路由、构建工具等）
+
+**技术栈提取要求**：
+- 不能只写"React"或"TailwindCSS"这样笼统的技术名
+- 必须列出具体的依赖库名称和版本
+- 识别出的关键技术库需要在报告中单独标注
 
 > **notice**: 这步要判断项目的价值。如果遇到项目质量特别低（比如项目下没有可以用于创建新工程的内容），则提示用户，然后退出。
 
@@ -63,20 +72,26 @@ metadata:
 
 **重点分析以下内容**：
 
-1. **核心算法目录**：如 `core/`、`utils/`、`algorithms/` 等
+1. **依赖配置分析**（适用于有包管理文件的语言）：
+   - 分析 `package.json`（Node.js）、`requirements.txt`/`pyproject.toml`（Python）、`go.mod`（Go）、`Cargo.toml`（Rust）等依赖配置文件
+   - 按功能分类提取依赖：UI组件、状态管理、路由、构建工具、数据库ORM、API框架、测试框架等
+   - 识别关键技术库并说明其作用
+   - **注意**：必须提取所有关键技术库，不能遗漏 UI 库、图标库、拖拽库、编辑器库等
+
+2. **核心算法目录**：如 `core/`、`utils/`、`algorithms/` 等
    - 不要只写"技术工具"或"分块"
    - 要深入分析具体的算法实现（如 markdown_chunking.py 的分块策略）
    - 提取：算法名称、核心逻辑、关键特性、fallback 策略
 
-2. **抽象接口**：如 `providers/`、`storage/`、`interfaces/`
+3. **抽象接口**：如 `providers/`、`storage/`、`interfaces/`
    - 分析抽象基类的设计
    - 提取：接口方法、配置模型、扩展点
 
-3. **Pipeline**：如 `pipelines/`
+4. **Pipeline**：如 `pipelines/`
    - 分析业务流程编排
    - 提取：流程步骤、错误处理、回滚机制
 
-4. **每个源码文件**都要看一遍：
+5. **每个源码文件**都要看一遍：
    - 优先看有详细注释的文件
    - 提取：设计决策、降级策略、关键逻辑
 
@@ -115,7 +130,10 @@ metadata:
         output: 输出
         usage: 使用场景
 
-    tech_stack: [技术1, 技术2]
+    tech_stack:
+      - category: 类别名称
+        items:
+          - 库名称: 版本（可选）
 
   模块2:
     ...
@@ -184,6 +202,32 @@ features:
 | description | 功能/规格描述 |
 | decision | 关键设计决策 |
 | implementation | 实现要点（如有源码） |
+
+### 依赖库分类识别（通用分类参考）
+
+分析依赖配置文件时，应识别以下类别的库（不局限于特定技术栈）：
+
+| 类别 | 说明 | 识别信号 |
+|------|------|----------|
+| **UI组件库** | 提供预制 UI 组件的库 | React生态：@radix-ui/*, @mui/*, antd, chakra-ui; Vue生态：vuetify, quasar, element-plus |
+| **CSS框架** | 样式/布局框架 | tailwindcss, bootstrap, sass, styled-components |
+| **状态管理** | 应用状态管理 | redux, zustand, pinia, vuex, recoil, jotai |
+| **路由** | 页面路由管理 | react-router, vue-router, next/router |
+| **构建工具** | 打包/编译/开发服务器 | vite, webpack, esbuild, rollup, @nestjs/cli |
+| **数据库ORM** | 数据库抽象层 | drizzle, prisma, sequelize, typeorm, sqlalchemy |
+| **API框架** | HTTP 服务框架 | express, fastify, koa, nestjs, flask, fastapi |
+| **图标库** | 图标组件 | lucide-react, @heroicons/react, @fortawesome/* |
+| **拖拽/排序** | 拖拽交互库 | @dnd-kit, react-beautiful-dnd, react-dnd, @hello-pangea/dnd |
+| **富文本/编辑器** | 文本编辑相关 | lexical, slate, quill, tiptap, @mdxeditor/editor |
+| **数据请求** | HTTP 客户端/数据获取 | axios, @tanstack/react-query, swr, ky |
+| **表单处理** | 表单验证/处理 | react-hook-form, formik, yup, zod |
+| **动画/过渡** | 动画效果库 | framer-motion, gsap, react-spring |
+| **图表/可视化** | 数据可视化 | d3, recharts, echarts, mermaid |
+| **认证/授权** | 用户认证相关 | passport, next-auth, auth0, better-auth, clerk |
+| **CLI框架** | 命令行工具框架 | commander, yargs, ink, cac |
+| **测试框架** | 单元/集成测试 | jest, vitest, cypress, playwright, pytest |
+
+> **重要**：上述表格是通用分类参考，不针对特定技术栈。实际分析时应根据项目实际使用的依赖进行分类，未知依赖应标注为"其他工具库"。关键是**不能遗漏任何关键技术库**，尤其是 UI 库、图标库、拖拽库、编辑器库等容易被忽略的辅助库。
 
 ---
 
