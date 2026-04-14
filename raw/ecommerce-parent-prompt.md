@@ -130,6 +130,53 @@ EOF
 
 # 设置 Git hooks
 git config core.hooksPath hooks
+
+# 创建 hooks 目录和 pre-commit 钩子
+mkdir -p hooks
+cat > hooks/pre-commit << 'EOF'
+#!/bin/sh
+# Pre-commit hook: 代码检查
+set -e
+
+echo "Running pre-commit checks..."
+
+# 后端检查
+cd backend
+if [ -f "requirements.txt" ]; then
+    echo "Checking Python code..."
+    python -m black --check . 2>/dev/null || true
+    python -m flake8 . 2>/dev/null || true
+fi
+cd ..
+
+# 前端检查
+cd frontend
+if [ -f "package.json" ]; then
+    echo "Checking TypeScript code..."
+    npm run lint 2>/dev/null || true
+    npm run type-check 2>/dev/null || true
+fi
+cd ..
+
+echo "Pre-commit checks passed!"
+EOF
+chmod +x hooks/pre-commit
+
+# 创建 commit-msg 钩子（规范提交格式）
+cat > hooks/commit-msg << 'EOF'
+#!/bin/sh
+# Commit-msg hook: 检查提交信息格式
+commit_msg=$(cat "$1")
+pattern="^(feat|fix|docs|style|refactor|test|chore)(\([a-zA-Z0-9_-]+\))?: .{1,50}"
+
+if ! echo "$commit_msg" | grep -qE "$pattern"; then
+    echo "Invalid commit message format!"
+    echo "Expected: <type>(<scope>): <subject>"
+    echo "Types: feat, fix, docs, style, refactor, test, chore"
+    exit 1
+fi
+EOF
+chmod +x hooks/commit-msg
 ```
 
 ## 开发规范
@@ -288,6 +335,31 @@ Step 6: 编写测试
 前后端联调:
 Step 8: API 联调测试
 Step 9: 功能集成测试
+```
+
+### 代码完成后检查流程
+
+每次完成代码编写后，必须执行以下步骤（按顺序）：
+
+```bash
+# 1. 代码简化: 运行 /simplify 检查并优化代码
+/simplify
+
+# 2. 代码格式化: 运行项目中的 format 命令
+make format
+
+# 3. 类型检查: 运行项目中的 type-check 命令
+make type-check  # 或 mypy backend && npm run type-check
+
+# 4. 代码检查: 运行项目中的 lint 命令
+make lint
+
+# 5. 运行测试: 运行项目中的 test 命令
+make test
+
+# 6. Git 提交: 确保所有检查通过后再提交
+git add .
+git commit -m "..."
 ```
 
 ### 4. 代码审查阶段

@@ -370,10 +370,31 @@ mkdir -p backend/alembic/versions
 mkdir -p backend/scripts
 
 # 2. 安装依赖
-pip install fastapi uvicorn sqlalchemy pymysql pydantic python-jose passlib bcrypt alembic redis python-multipart
+pip install fastapi uvicorn sqlalchemy pymysql pydantic pydantic-settings python-jose passlib bcrypt alembic redis python-multipart
 
 # 3. 配置环境变量
 cp .env.example .env
+```
+
+### 配置文件示例
+
+```python
+# src/app/config.py
+from pydantic_settings import BaseSettings
+
+
+class Settings(BaseSettings):
+    DATABASE_URL: str = "mysql+pymysql://user:password@localhost:3306/ecommerce"
+    REDIS_URL: str = "redis://localhost:6379/0"
+    SECRET_KEY: str
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+
+    class Config:
+        env_file = ".env"
+
+
+settings = Settings()
 ```
 
 ### 数据库设计
@@ -463,7 +484,15 @@ logger.info({"event": "order_created", "order_id": order_id, "user_id": user_id}
 
 ### 3. 目录脚手架
 ```bash
-python -m cookiecutter https://github.com/fastapi/full-stack-fastapi-template
+# 显式创建项目结构（符合 src/ 目录规范）
+mkdir -p backend/src/app/{api/v1,models,schemas,services,repositories,core,utils}
+mkdir -p backend/tests/{api,services,repositories}
+mkdir -p backend/alembic/versions
+mkdir -p backend/scripts
+mkdir -p backend/logs
+
+# 创建空 __init__.py
+find backend/src/app -name "__init__.py" -prune -o -type d -exec touch {}/__init__.py \; 2>/dev/null || true
 ```
 
 ### 4. 代码开发流程
@@ -576,3 +605,76 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 - Redis 缓存热点数据
 - 异步任务队列
 - 连接池配置
+
+## 健康检查
+
+```python
+# src/app/api/v1/health.py
+from fastapi import APIRouter
+
+router = APIRouter(tags=["健康检查"])
+
+
+@router.get("/health")
+def health_check():
+    return {"status": "healthy"}
+
+
+@router.get("/health/db")
+def health_check_db(db: Session = Depends(get_db)):
+    db.execute("SELECT 1")
+    return {"status": "healthy", "database": "connected"}
+```
+
+## 数据库种子数据
+
+```python
+# scripts/seed.py
+"""数据库种子数据脚本"""
+from sqlalchemy.orm import Session
+from app.models.user import User
+from app.models.category import Category
+from app.models.product import Product
+from app.core.security import get_password_hash
+
+
+def seed_database(db: Session):
+    """填充测试数据"""
+    # 创建管理员用户
+    admin = User(
+        username="admin",
+        email="admin@example.com",
+        hashed_password=get_password_hash("admin123"),
+        is_admin=True,
+    )
+    db.add(admin)
+
+    # 创建分类
+    categories = [
+        Category(name="电子产品"),
+        Category(name="服装"),
+        Category(name="食品"),
+    ]
+    for cat in categories:
+        db.add(cat)
+    db.commit()
+
+    # 创建商品
+    products = [
+        Product(name="iPhone 15", price=6999.0, stock=100, category_id=1),
+        Product(name="MacBook Pro", price=12999.0, stock=50, category_id=1),
+    ]
+    for product in products:
+        db.add(product)
+    db.commit()
+
+
+if __name__ == "__main__":
+    from app.database import SessionLocal
+    db = SessionLocal()
+    try:
+        seed_database(db)
+        print("Seed data created successfully")
+    finally:
+        db.close()
+```
